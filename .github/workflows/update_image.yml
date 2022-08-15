@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Auto Update from Base Image
+
+# Controls when the workflow will run
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Docker Image Update Checker
+        id: baseupdatecheck
+        uses: lucacome/docker-image-update-checker@v1.1.0
+        with:
+          base-image: library/caddy:latest
+          image: uetuluk/caddy-cloudflare:latest
+      
+      - name: Update via Tag
+        uses: actions/github-script@v5.1.1
+        with:
+          script: |
+            github.rest.git.createRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: 'refs/tags/latest',
+                  sha: context.sha
+                })
+          if: steps.check.outputs.needs-updating == 'true'
+
+
