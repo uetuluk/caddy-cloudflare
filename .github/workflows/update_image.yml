@@ -23,17 +23,38 @@ jobs:
         with:
           base-image: library/caddy:latest
           image: uetuluk/caddy-cloudflare:latest
-      
-      - name: Update via Tag
-        uses: actions/github-script@v5.1.1
+          
+      - name: Check if Tag Exists
+        uses: actions/github-script@v6
         with:
           script: |
-            github.rest.git.createRef({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  ref: 'refs/tags/latest',
-                  sha: context.sha
-                })
+            // Check if ref exists
+            const refResponse = github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/latest',
+              sha: context.sha
+            });
+            
+            // Update if it exists
+            if ( refResponse.status === 200) {
+              github.rest.git.updateRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/latest',
+                sha: context.sha,
+                force: true
+              });
+            }
+            
+            // Create if it doesn't
+            else {
+              github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/latest',
+                sha: context.sha
+              });  
+            }
+            
           if: steps.check.outputs.needs-updating == 'true'
-
-
