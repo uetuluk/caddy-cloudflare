@@ -1,7 +1,0 @@
-FROM --platform=linux/arm64/v8 caddy:builder AS builder
-
-RUN xcaddy build --with github.com/caddy-dns/cloudflare
-
-FROM --platform=linux/arm64/v8 caddy:latest
-
-COPY --from=builder /usr/bin/caddy /usr/bin/caddy
