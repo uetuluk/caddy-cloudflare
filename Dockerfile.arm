@@ -1,7 +1,6 @@
 FROM --platform=linux/arm64/v8 caddy:builder AS builder
 
-RUN caddy-builder \
-    github.com/caddy-dns/cloudflare
+RUN xcaddy build --with github.com/caddy-dns/cloudflare
 
 FROM --platform=linux/arm64/v8 caddy:latest
 
