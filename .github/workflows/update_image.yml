@@ -26,7 +26,7 @@ jobs:
           
       - name: Check if Tag Exists Update or Create
         uses: actions/github-script@v6
-        if: steps.check.outputs.needs-updating == 'true'
+        if: steps.baseupdatecheck.outputs.needs-updating == 'true'
         with:
           script: |
             // Check if ref exists
