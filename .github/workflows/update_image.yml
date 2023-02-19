@@ -29,31 +29,10 @@ jobs:
         if: steps.baseupdatecheck.outputs.needs-updating == 'true'
         with:
           script: |
-            // Check if ref exists
-            const refResponse = await github.rest.git.getRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'tags/latest',
-              sha: context.sha
-            });
-            
-            // Update if it exists
-            if ( refResponse.status === 200) {
-              await github.rest.git.updateRef({
+              github.rest.git.updateRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: 'tags/latest',
                 sha: context.sha,
                 force: true
               });
-            }
-            
-            // Create if it doesn't
-            else {
-              await github.rest.git.createRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: 'refs/tags/latest',
-                sha: context.sha
-              });  
-            }
